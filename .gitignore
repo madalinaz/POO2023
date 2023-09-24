@@ -2,8 +2,5 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/FirstProject/FirstProject/.vs/FirstProject/v16
-/G1051/S01/.vs/S01/v16
-/G1051/S01/Debug
-/G1051/S02/.vs/S02/v16
-/G1051/S02/Debug
+**/Debug/
+**/.vs/
