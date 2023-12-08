@@ -10,6 +10,12 @@ class IFile {
 	virtual void restoreFromFile(fstream& file) = 0;//metoda virtuala pura
 };
 
+//Animal este clasa Abstracta (pentru ca nu are implementare concreta pentru meth
+//virtuale pure din clasa de baza IFile
+class Animal :IFile {
+	string denumire;
+};
+
 //daca nu exista implementari concrete in clasa Eveniment pentru meth virtuale pure,
 //atunci clasa ramane clasa Abstracta
 class Eveniment:IFile {
@@ -80,6 +86,7 @@ public:
 		//scriere pret bilet(float)
 		file.write((char*)&this->pretBilet, sizeof(float));
 	}
+
 	void restoreFromFile(fstream& file) {
 		//citire nr persoane(int)
 		file.read((char*)&this->nrPers, sizeof(int));
