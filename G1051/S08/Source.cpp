@@ -328,7 +328,7 @@ public:
 		this->posesorLista = posesorLista;
 		if (nrCadouri > 0 && listaCadouri != nullptr) {
 			this->nrCadouri = nrCadouri;
-			this->listaCadouri = listaCadouri;
+			//this->listaCadouri = listaCadouri;
 			this->listaCadouri = new Cadou * [this->nrCadouri];
 			for (int i = 0; i < this->nrCadouri; i++)
 				this->listaCadouri[i] = new Cadou(*listaCadouri[i]);
@@ -339,7 +339,7 @@ public:
 		this->posesorLista = w.posesorLista;
 		if (w.nrCadouri > 0 && w.listaCadouri != nullptr) {
 			this->nrCadouri = w.nrCadouri;
-			this->listaCadouri = w.listaCadouri;
+			//this->listaCadouri = w.listaCadouri;
 			this->listaCadouri = new Cadou * [this->nrCadouri];
 			for (int i = 0; i < this->nrCadouri; i++)
 				this->listaCadouri[i] = new Cadou(*w.listaCadouri[i]);
@@ -359,7 +359,7 @@ public:
 			this->posesorLista = w.posesorLista;
 			if (w.nrCadouri > 0 && w.listaCadouri != nullptr) {
 				this->nrCadouri = w.nrCadouri;
-				this->listaCadouri = w.listaCadouri;
+				//this->listaCadouri = w.listaCadouri;
 				this->listaCadouri = new Cadou * [this->nrCadouri];
 				for (int i = 0; i < this->nrCadouri; i++)
 					this->listaCadouri[i] = new Cadou(*w.listaCadouri[i]);
