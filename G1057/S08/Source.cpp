@@ -1,239 +1,395 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
-#include <string>
+#include<iostream>
 using namespace std;
 
-class AgendaTelefon {
-private:
-	const int id;
-	string detinator = "Anonim";
-	int nrContacte = 0;
-	string* listaContacte = nullptr;
-	int nrContacteFavorite = 0;
-	int nrContacteSterse = 0;
-	static const int dimensiuneMaximaStocare = 60;
+class ExceptieExistentaDenumire {
+	string mesaj;
 public:
-	AgendaTelefon(int id) :id(id) {}
+	ExceptieExistentaDenumire(string mesaj) :mesaj(mesaj) {}
+	string getMesaj() { return this->mesaj; }
+};
 
-	int getNrContacteFavorite() {
-		return this->nrContacteFavorite;
-	}
+class Produs
+{
+	char* denumire = nullptr;
+	int nrZile = 0;
+	float* preturi = nullptr;
+	int stoc = 0;
 
-	void setNrContacteFavorite(int numar) {
-		if (numar >= 0)
-			this->nrContacteFavorite = numar;
-	}
-
-	int getNrContacteSterse() {
-		return this->nrContacteSterse;
-	}
-
-	void setNrContacteSterse(int numar) {
-		if (numar >= 0)
-			this->nrContacteSterse = numar;
-	}
-
-	void adaugaContact(string contact) {
-		if (this->nrContacte == 0 && contact.length() <= dimensiuneMaximaStocare) {
-			delete[] this->listaContacte;
-			this->listaContacte = nullptr;
-			this->nrContacte = 1;
-			this->listaContacte = new string[1];
-			this->listaContacte[0] = contact;
+public:
+	Produs(const char* denumire, int stoc)
+	{
+		if (denumire != nullptr) {
+			this->denumire = new char[strlen(denumire) + 1];
+			strcpy(this->denumire, denumire);
 		}
-		else if (this->nrContacte > 0 && this->listaContacte != nullptr) {
-			int dimensiuneOcupata = 0;
-			for (int i = 0; i < this->nrContacte; i++)
-				dimensiuneOcupata += this->listaContacte[i].length();
-			if (contact.length() <= (dimensiuneMaximaStocare - dimensiuneOcupata)) {
-				AgendaTelefon copie = *this;
-				delete[] copie.listaContacte;
-				copie.listaContacte = nullptr;
-				copie.nrContacte++;
-				copie.listaContacte = new string[copie.nrContacte];
-				for (int i = 0; i < this->nrContacte; i++)
-					copie.listaContacte[i] = this->listaContacte[i];
-				copie.listaContacte[copie.nrContacte - 1] = contact;
-				delete[] this->listaContacte;
-				this->listaContacte = nullptr;
-				this->nrContacte++;
-				this->listaContacte = new string[this->nrContacte];
-				for (int i = 0; i < this->nrContacte; i++)
-					this->listaContacte[i] = copie.listaContacte[i];
+		if (stoc > 0)
+			this->stoc = stoc;
+	}
+
+	Produs(const Produs& p)
+	{
+		if (p.denumire != nullptr) {
+			this->denumire = new char[strlen(p.denumire) + 1];
+			strcpy(this->denumire, p.denumire);
+		}
+		this->stoc = p.stoc;
+		this->nrZile = p.nrZile;
+		this->preturi = new float[this->nrZile];
+		for (int i = 0; i < this->nrZile; i++)
+			this->preturi[i] = p.preturi[i];
+	}
+
+	Produs& operator=(const Produs& p)
+	{
+		if (this != &p) {
+			delete[] this->denumire;
+			this->denumire = nullptr;
+			delete[] this->preturi;
+			this->preturi = nullptr;
+			if (p.denumire != nullptr) {
+				this->denumire = new char[strlen(p.denumire) + 1];
+				strcpy(this->denumire, p.denumire);
 			}
+			this->stoc = p.stoc;
+			this->nrZile = p.nrZile;
+			this->preturi = new float[this->nrZile];
+			for (int i = 0; i < this->nrZile; i++)
+				this->preturi[i] = p.preturi[i];
 		}
-		else throw exception("Nu exista dimensiune disponibila suficient de mare pentru a adauga un contact nou");
-	}
-
-	~AgendaTelefon() {
-		delete[] this->listaContacte;
-		this->listaContacte = nullptr;
-	}
-
-	friend ostream& operator<<(ostream& out, const AgendaTelefon& a) {
-		out << "\n------AGENDA-------";
-		out << "\nID: " << a.id;
-		out << "\nDetinator: " << a.detinator;
-		out << "\nNr contacte: " << a.nrContacte;
-		out << "\nLista contacte: ";
-		if (a.nrContacte > 0 && a.listaContacte != nullptr)
-			for (int i = 0; i < a.nrContacte; i++)
-				out << a.listaContacte[i] << " ";
-		else out << "-";
-		out << "\nNr contacte favorite: " << a.nrContacteFavorite;
-		out << "\nNr contacte sterse: " << a.nrContacteSterse;
-		out << "\nDimensiune maxima stocare: " << AgendaTelefon::dimensiuneMaximaStocare;
-		out << "\n-------------------";
-		return out;
-	}
-
-	friend istream& operator>>(istream& in, AgendaTelefon& a) {
-		delete[] a.listaContacte;
-		a.listaContacte = nullptr;
-		cout << "detinator: ";
-		in >> a.detinator;
-		cout << "nrContacte: ";
-		in >> a.nrContacte;
-		if (a.nrContacte > 0) {
-			a.listaContacte = new string[a.nrContacte];
-			for (int i = 0; i < a.nrContacte; i++) {
-				cout << "Contact " << i << " : ";
-				in >> a.listaContacte[i];
-			}
-		}
-		cout << "nrContacteFavorite: ";
-		in >> a.nrContacteFavorite;
-		cout << "nrContacteSterse: ";
-		in >> a.nrContacteSterse;
-		return in;
-	}
-
-	AgendaTelefon(const AgendaTelefon& a) :id(a.id) {
-		this->detinator = a.detinator;
-		this->nrContacte = a.nrContacte;
-		if (this->nrContacte > 0) {
-			this->listaContacte = new string[this->nrContacte];
-			for (int i = 0; i < this->nrContacte; i++)
-				this->listaContacte[i] = a.listaContacte[i];
-		}
-		this->nrContacteFavorite = a.nrContacteFavorite;
-		this->nrContacteSterse = a.nrContacteSterse;
-	}
-
-	AgendaTelefon& operator=(const AgendaTelefon& a) {
-		delete[] this->listaContacte;
-		this->listaContacte = nullptr;
-		this->detinator = a.detinator;
-		this->nrContacte = a.nrContacte;
-		if (this->nrContacte > 0) {
-			this->listaContacte = new string[this->nrContacte];
-			for (int i = 0; i < this->nrContacte; i++)
-				this->listaContacte[i] = a.listaContacte[i];
-		}
-		this->nrContacteFavorite = a.nrContacteFavorite;
-		this->nrContacteSterse = a.nrContacteSterse;
 		return *this;
 	}
 
-	void operator+(string contact) {
-		contact + *this;
-	}
-
-	friend void operator+(string contact, AgendaTelefon& a) {
-		a.adaugaContact(contact);
-	}
-
-	int getNrContactiDupaInitiala(char c) {
-		if (this->nrContacte > 0 && this->listaContacte != nullptr) {
-			int numar = 0;
-			for (int i = 0; i < this->nrContacte; i++)
-				if (this->listaContacte[i][0] == toupper(c) ||
-					this->listaContacte[i][0] == tolower(c))
-					numar++;
-			return numar;
-		}
-	}
-
-	bool operator()() {
-		if (this->nrContacte > 1 && this->listaContacte != nullptr) {
-			int ok = 0;
-			for (int i = 0; i < this->nrContacte - 1 && !ok; i++)
-				for (int j = i + 1; j < this->nrContacte && !ok; j++)
-					if (this->listaContacte[i] == listaContacte[j])
-						ok = 1;
-			if (ok) return true;
+	bool operator<=(const Produs& p) {
+		if (this->nrZile > 0 && p.nrZile > 0) {
+			if (this->preturi[this->nrZile - 1] <= p.preturi[p.nrZile - 1])
+				return true;
 			return false;
 		}
-		return false;
+		else throw exception("nu toate obj au preturi");
 	}
 
-	string* operator[](char c) {
-		string* lista;
-		lista = nullptr;
-		if (this->nrContacte > 0 && this->listaContacte != nullptr) {
-			int dimensiune = this->getNrContactiDupaInitiala(c);
-			if (dimensiune > 0) {
-				int k = 0;
-				lista = new string[dimensiune];
-				for (int i = 0; i < this->nrContacte; i++)
-					if (this->listaContacte[i][0] == toupper(c) ||
-						this->listaContacte[i][0] == tolower(c))
-						lista[k++] = this->listaContacte[i];
+	void adaugaPret(float pretNou)
+	{
+		if (pretNou > 0 && (this->nrZile == 0 || (pretNou != this->preturi[this->nrZile - 1]))) {
+			Produs p = *this;
+			delete[] this->preturi;
+			this->nrZile++;
+			this->preturi = new float[this->nrZile];
+			for (int i = 0; i < p.nrZile; i++)
+				this->preturi[i] = p.preturi[i];
+			this->preturi[this->nrZile - 1] = pretNou;
+		}
+	}
+
+	void afisare()
+	{
+		cout << "\n--------------------";
+		if (this->denumire != nullptr) {
+			cout << "\nDenumire: " << this->denumire;
+		}
+		else {
+			cout << "\nDenumire: -";
+		}
+		cout << "\nStoc: " << this->stoc;
+		cout << "\nNr zile: " << this->nrZile;
+		cout << "\nIstoric preturi: ";
+		if (this->nrZile > 0) {
+			for (int i = 0; i < this->nrZile; i++)
+				cout << this->preturi[i] << " ";
+		}
+		else {
+			cout << "-";
+		}
+		cout << "\n--------------------";
+	}
+
+	~Produs()
+	{
+		delete[] this->denumire;
+		this->denumire = nullptr;
+		delete[] this->preturi;
+		this->preturi = nullptr;
+	}
+
+	friend bool operator==(string denumire, const  Produs& p) {
+		if (p.denumire != nullptr)
+			return denumire == p.denumire;
+		else throw new ExceptieExistentaDenumire("produsul nu are denumire");
+	}
+
+	friend ostream& operator<<(ostream& out, const Produs& p) {
+		out << "\n---------OSTREAM-----------";
+		if (p.denumire != nullptr) {
+			out << "\nDenumire: " << p.denumire;
+		}
+		else {
+			out << "\nDenumire: -";
+		}
+		out << "\nStoc: " << p.stoc;
+		out << "\nNr zile: " << p.nrZile;
+		out << "\nIstoric preturi: ";
+		if (p.nrZile > 0) {
+			for (int i = 0; i < p.nrZile; i++)
+				out << p.preturi[i] << " ";
+		}
+		else {
+			out << "-";
+		}
+		out << "\n--------------------";
+		return out;
+	}
+
+	friend istream& operator>>(istream& in, Produs& p) {
+		delete[] p.denumire;
+		p.denumire = nullptr;
+		delete[] p.preturi;
+		p.preturi = nullptr;
+
+		cout << "\nIntroduceti denumirea: ";
+		string buffer;
+		in >> buffer;
+		p.denumire = new char[buffer.size() + 1];
+		strcpy(p.denumire, buffer.data());
+
+		cout << "Introduceti stoc: ";
+		in >> p.stoc;
+		cout << "Introduceti nr zile analiza preturi: ";
+		in >> p.nrZile;
+		if (p.nrZile <= 0) {
+			p.nrZile = 0;
+			p.preturi = nullptr;
+		}
+		else {
+			p.preturi = new float[p.nrZile];
+			cout << "Introduceti preturile:\n";
+			for (int i = 0; i < p.nrZile; i++) {
+				cout << "pret[" << i << "]=";
+				in >> p.preturi[i];
 			}
 		}
-		return lista;
+		return in;
+	}
+
+	Produs operator+(int stocSuplimentar) {
+		if (stocSuplimentar > 0) {
+			Produs rez = *this;
+			rez.stoc += stocSuplimentar;
+			return rez;
+		}
+	}
+
+	Produs& operator+=(int stocSuplimentar) {
+		if (stocSuplimentar > 0) {
+			this->stoc += stocSuplimentar;
+			return *this;
+		}
+	}
+
+	//forma pre-incrementare
+	Produs& operator++() {
+		this->stoc++;
+		return *this;//returneaza starea obj de dupa incrementare
+	}
+
+	//forma post-incrementare
+	Produs operator++(int) {
+		Produs copie = *this;
+		this->stoc++;
+		return copie;//returneaza starea obj de dinainte de incrementare
+	}
+
+	float operator[](int pozitie) {
+		if (pozitie >= 0 && pozitie < this->nrZile) {
+			if (this->preturi != nullptr) {
+				return this->preturi[pozitie];
+			}
+		}
+	}
+
+	bool operator()(float pret) {
+		if (pret > 0) {
+			if (this->preturi != nullptr) {
+				for (int i = 0; i < this->nrZile; i++)
+					if (this->preturi[i] == pret)
+						return true;
+				return false;
+			}
+		}
+	}
+
+	explicit operator int() {
+		return this->stoc;
+	}
+
+	bool operator!() {
+		if (this->preturi == nullptr)
+			return true;
+		return false;
 	}
 };
 
-int main() {
-	//apel constructor cu 1 param
-	AgendaTelefon a1(34);
-	cout << a1;
-	a1.setNrContacteFavorite(4);
-	a1.setNrContacteSterse(5);
-	cout << endl << "Nr contacte fav: " << a1.getNrContacteFavorite();
-	cout << endl << "Nr contacte sterse: " << a1.getNrContacteSterse();
-	cout << a1 << endl;
-	cin >> a1;
-	cout << a1;
-	//apel constructor de copiere
-	AgendaTelefon a2(a1);
-	cout << a2;
-	try {
-		a1.adaugaContact("Poroneci");
-	}
-	catch (exception ex) {
-		cout << ex.what();
+class Cadou {
+private:
+	string denumire = "Anonim";
+	float pret = 0;
+
+public:
+	Cadou()
+	{
 	}
 
-	cout << a1;
-
-	AgendaTelefon a3(51);
-	cout << a3;
-	a3 = a1;
-	cout << a3;
-
-	"Colo" + a3;
-	cout << a3;
-
-	a3 + "Soroneci";
-	cout << a3;
-
-	char initiala = 'A';
-	cout << endl << "Nr de contacte care incep cu caracterul " << initiala << " este: " << a3.getNrContactiDupaInitiala(initiala);
-
-	if (a3()) cout << endl << "Exista dubluri in a3";
-	else cout << endl << "Nu exista dubluri in a3";
-
-	cout << endl << "Lista formata din contacte care incep cu initiala " << initiala << " : ";
-	if (a3.getNrContactiDupaInitiala(initiala) == 0) cout << "-";
-	else {
-		string* lista;
-		lista = new string[a3.getNrContactiDupaInitiala(initiala)];
-		lista = a3[initiala];
-		for (int i = 0; i < a3.getNrContactiDupaInitiala(initiala); i++)
-			cout << lista[i] << " ";
+	Cadou(string denumire, float pret)
+	{
+		this->denumire = denumire;
+		this->pret = pret;
 	}
 
+	Cadou(const Cadou& c)
+	{
+		this->denumire = c.denumire;
+		this->pret = c.pret;
+	}
+
+	Cadou& operator=(const Cadou& c)
+	{
+		this->denumire = c.denumire;
+		this->pret = c.pret;
+		return *this;
+	}
+
+	friend ostream& operator<<(ostream& out, const Cadou& c)
+	{
+		out << "\nDenumire: " << c.denumire << ", pret: " << c.pret;
+		return out;
+	}
+	friend istream& operator>>(istream& in, Cadou& c)
+	{
+		cout << "Introduceti denumire: ";
+		in >> c.denumire;
+		cout << "Introduceti pret: ";
+		in >> c.pret;
+		return in;
+	}
+
+	friend class WishList;
+};
+
+class WishList1 {
+	string posesorLista;
+	int nrCadouri;
+	Cadou listaCadouri[100];
+};
+
+class WishList2 {
+	string posesorLista;
+	int nrCadouri;
+	Cadou* listaCadouri;
+};
+
+class WishList3 {
+	string posesorLista;
+	int nrCadouri;
+	Cadou* listaCadouri[100];
+};
+
+class WishList {
+	string posesorLista = "Anonim";
+	int nrCadouri = 0;
+	Cadou** listaCadouri = nullptr;
+
+public:
+	WishList(string posesorLista, int nrCadouri, Cadou** listaCadouri) {
+		this->posesorLista = posesorLista;
+		if (nrCadouri > 0 && listaCadouri != nullptr) {
+			this->nrCadouri = nrCadouri;
+			//this->listaCadouri = listaCadouri;
+			this->listaCadouri = new Cadou * [this->nrCadouri];
+			for (int i = 0; i < this->nrCadouri; i++)
+				this->listaCadouri[i] = new Cadou(*listaCadouri[i]);
+		}
+	}
+
+	WishList(const WishList& w) {
+		this->posesorLista = w.posesorLista;
+		if (w.nrCadouri > 0 && w.listaCadouri != nullptr) {
+			this->nrCadouri = w.nrCadouri;
+			//this->listaCadouri = w.listaCadouri;
+			this->listaCadouri = new Cadou * [this->nrCadouri];
+			for (int i = 0; i < this->nrCadouri; i++)
+				this->listaCadouri[i] = new Cadou(*w.listaCadouri[i]);
+		}
+	}
+
+	WishList& operator=(const WishList& w) {
+		if (this != &w) {
+			for (int i = 0; i < this->nrCadouri; i++) {
+				delete this->listaCadouri[i];
+				this->listaCadouri[i] = nullptr;
+			}
+			delete[] this->listaCadouri;
+			this->listaCadouri = nullptr;
+			this->posesorLista = w.posesorLista;
+			if (w.nrCadouri > 0 && w.listaCadouri != nullptr) {
+				this->nrCadouri = w.nrCadouri;
+				//this->listaCadouri = w.listaCadouri;
+				this->listaCadouri = new Cadou * [this->nrCadouri];
+				for (int i = 0; i < this->nrCadouri; i++)
+					this->listaCadouri[i] = new Cadou(*w.listaCadouri[i]);
+			}
+			else {
+				this->nrCadouri = 0;
+				this->listaCadouri = nullptr;
+			}
+		}
+		return *this;
+	}
+
+	~WishList() {
+		for (int i = 0; i < this->nrCadouri; i++) {
+			delete this->listaCadouri[i];
+			this->listaCadouri[i] = nullptr;
+		}
+		delete[] this->listaCadouri;
+		this->listaCadouri = nullptr;
+	}
+
+	friend ostream& operator<<(ostream& out, const WishList& w) {
+		out << "\nPosesor lista: " << w.posesorLista;
+		out << "\nNr cadouri: " << w.nrCadouri;
+		out << "\nLista cadouri:";
+		for (int i = 0; i < w.nrCadouri; i++)
+			out << *w.listaCadouri[i];
+		return out;
+	}
+};
+
+class WishList4 {
+	string posesorLista;
+	Cadou* cadouSpecial;
+	int nrCadouri;
+	Cadou listaCadouri[100];
+};
+
+class WishList5 {
+	string posesorLista;
+	Cadou** listaCadouri[24];
+	int nrCadouriZi[24];
+};
+int main()
+{
+	/*Produs p("Stilou",1000);
+	cin >> p;
+	cout << p;*/
+	Cadou c1("Stilou", 1000);
+	Cadou c2("Pix", 200);
+	Cadou c3("Carte", 250);
+
+	Cadou* listaCadouri[3] = { &c1,&c2,&c3 };
+	WishList w("DZM", 3, listaCadouri);
+	cout << w;
+
+	//float pretMinim = (float)w;
+	//Cadou c4 = w[0];
 	return 0;
 }
