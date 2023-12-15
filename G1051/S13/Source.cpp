@@ -41,6 +41,13 @@ public:
 	}
 };
 
+class WishList {
+	Eveniment* listaEv;
+	int nrEvenimente;
+
+	vector<Eveniment> vEv;
+};
+
 
 int main()
 {
